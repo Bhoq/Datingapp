@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#1a0a0f"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="HeartMatch"/>
+<meta name="description" content="HeartMatch USA — Serious dating for serious people"/>
+<link rel="manifest" href="manifest.json"/>
+<title>HeartMatch USA</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0f0508;
+  --surface:#1c0d12;
+  --surface2:#261118;
+  --border:#3d1a24;
+  --gold:#c9956a;
+  --gold2:#e8b48a;
+  --rose:#e8436a;
+  --rose2:#ff6b8a;
+  --text:#f5e6ea;
+  --muted:#9a7480;
+  --pill-active-bg:#8b1a35;
+  --pill-active-border:#c2185b;
+  --radius:14px;
+  --font-display:'Playfair Display',serif;
+  --font-body:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:var(--font-body);color:var(--text);overscroll-behavior:none}
+
+/* ── SPLASH ── */
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .6s}
+#splash.hide{opacity:0;pointer-events:none}
+.splash-logo{font-size:72px;animation:pulse 2s infinite}
+.splash-name{font-family:var(--font-display);font-size:36px;color:var(--gold);margin-top:12px;letter-spacing:1px}
+.splash-sub{font-size:13px;color:var(--muted);margin-top:6px;letter-spacing:2px;text-transform:uppercase}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+/* ── APP SHELL ── */
+#app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,#1a0a0f,#2d0f1c);padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;padding-top:max(16px,env(safe-area-inset-top))}
+.header-logo{display:flex;align-items:center;gap:8px}
+.header-logo span:first-child{font-size:20px}
+.header-logo .name{font-family:var(--font-display);font-size:18px;color:var(--gold);font-weight:700}
+.header-right{font-family:var(--font-body);font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.5px}
+
+/* ── PROGRESS ── */
+.progress-wrap{background:var(--surface);height:3px;flex-shrink:0}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--rose),var(--gold));transition:width .4s ease;border-radius:0 2px 2px 0}
+
+/* ── STEP TABS ── */
+.tabs{background:var(--surface);display:flex;overflow-x:auto;border-bottom:1px solid var(--border);flex-shrink:0;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 14px;border:none;background:none;color:var(--muted);font-family:var(--font-body);font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .2s}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab.done{color:#5a3545}
+
+/* ── SCROLL AREA ── */
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.scroll-area::-webkit-scrollbar{display:none}
+.page{padding:20px 20px 16px;min-height:100%}
+
+/* ── NAV BAR ── */
+.nav-bar{background:var(--surface);border-top:1px solid var(--border);padding:12px 20px;padding-bottom:max(12px,env(safe-area-inset-bottom));display:flex;gap:10px;flex-shrink:0}
+.btn-back{flex:1;padding:14px;border-radius:var(--radius);border:1.5px solid var(--border);background:transparent;color:var(--gold);font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-back:active{background:var(--surface2)}
+.btn-next{flex:2;padding:14px;border-radius:var(--radius);border:none;background:linear-gradient(135deg,#8b1a35,var(--rose));color:white;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(232,67,106,.35);transition:all .2s;letter-spacing:.3px}
+.btn-next:active{transform:scale(.98)}
+.btn-next:disabled{background:var(--surface2);color:var(--muted);box-shadow:none;cursor:not-allowed}
+
+/* ── SECTION TITLE ── */
+.sec-title{margin-bottom:24px}
+.sec-title h2{font-family:var(--font-display);font-size:26px;color:var(--gold);font-weight:700;line-height:1.2}
+.sec-title p{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.5}
+
+/* ── FORM FIELDS ── */
+.field{margin-bottom:18px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
+.field label .req{color:var(--rose)}
+.field input,.field select,.field textarea{width:100%;padding:13px 15px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font-body);font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
+.field textarea{resize:none}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239a7480' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0 8px}
+
+/* ── PILLS ── */
+.pill-group{margin-bottom:20px}
+.pill-group label{display:block;font-size:11px;font-weight:600;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{padding:8px 15px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;-webkit-appearance:none}
+.pill.on{background:var(--pill-active-bg);border-color:var(--rose);color:white;font-weight:600}
+.pill.on.gold{background:#5c3a1e;border-color:var(--gold);color:var(--gold2)}
+.pill.on.purple{background:#2d1a4a;border-color:#9c67d4;color:#c9a0f5}
+
+/* ── INFO BOXES ── */
+.box{border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;font-size:13px;line-height:1.6}
+.box.info{background:rgba(201,149,106,.08);border:1px solid rgba(201,149,106,.2);color:var(--gold2)}
+.box.warn{background:rgba(255,165,0,.08);border:1px solid rgba(255,165,0,.2);color:#ffb347}
+.box.ok{background:rgba(76,175,80,.08);border:1px solid rgba(76,175,80,.2);color:#81c784}
+.box.privacy{background:rgba(232,67,106,.06);border:1px solid rgba(232,67,106,.15);color:#f48ba0}
+
+/* ── PHOTOS ── */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.photo-slot{aspect-ratio:3/4;border-radius:12px;border:1.5px dashed var(--border);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:border-color .2s}
+.photo-slot:active{opacity:.8}
+.photo-slot.filled{border-style:solid;border-color:var(--border)}
+.photo-slot.main-slot{border-color:var(--gold);border-width:2px}
+.photo-slot img{width:100%;height:100%;object-fit:cover}
+.photo-badge{position:absolute;top:6px;left:6px;background:var(--gold);color:#1a0a0f;font-size:9px;font-weight:700;padding:3px 7px;border-radius:20px;letter-spacing:.5px}
+.photo-del{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);color:white;border:none;border-radius:50%;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.photo-add-icon{font-size:28px;color:var(--border);margin-bottom:4px}
+.photo-add-txt{font-size:10px;color:var(--muted);font-weight:500}
+.add-photo-btn{width:100%;padding:14px;border-radius:var(--radius);border:1.5px dashed var(--rose);background:rgba(232,67,106,.05);color:var(--rose);font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:14px;letter-spacing:.3px;transition:background .2s}
+.add-photo-btn:active{background:rgba(232,67,106,.12)}
+
+/* ── WELCOME ── */
+.welcome-hero{text-align:center;padding:20px 0 28px}
+.welcome-hero .logo-big{font-size:64px;margin-bottom:16px}
+.welcome-hero h1{font-family:var(--font-display);font-size:38px;color:var(--gold);font-weight:900;line-height:1.1;margin-bottom:8px}
+.welcome-hero p{color:var(--muted);font-size:14px;line-height:1.7;max-width:300px;margin:0 auto}
+.welcome-quote{background:var(--surface);border-radius:var(--radius);padding:18px;margin:20px 0;border-left:3px solid var(--gold)}
+.welcome-quote p{font-family:var(--font-display);font-size:16px;color:var(--text);font-style:italic;line-height:1.6}
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.feature-card{background:var(--surface);border-radius:var(--radius);padding:16px;border:1px solid var(--border);text-align:center}
+.feature-card .icon{font-size:28px;margin-bottom:8px}
+.feature-card .title{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px;text-transform:uppercase}
+.feature-card .desc{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+
+/* ── REVIEW ── */
+.review-card{background:var(--surface);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.review-label{font-size:13px;font-weight:600;color:var(--gold);white-space:nowrap}
+.review-val{font-size:12px;color:var(--muted);text-align:right;line-height:1.4}
+.score-ring{width:100px;height:100px;margin:0 auto 12px;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:28px;color:var(--gold);font-weight:700}
+
+/* ── REQUIREMENT CARDS ── */
+.req-card{border-radius:var(--radius);padding:18px;margin-bottom:18px;border:1px solid}
+.req-card.must{background:rgba(139,26,53,.1);border-color:rgba(194,24,91,.3)}
+.req-card.flex{background:rgba(42,26,74,.15);border-color:rgba(156,103,212,.3)}
+.req-card h3{font-family:var(--font-display);font-size:18px;margin-bottom:6px}
+.req-card.must h3{color:var(--rose2)}
+.req-card.flex h3{color:#c9a0f5}
+.req-card p{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+
+/* ── SUBMITTED ── */
+#submitted{display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:998}
+#submitted .inner{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center}
+#submitted .rose{font-size:80px;margin-bottom:20px;animation:pulse 2s infinite}
+#submitted h1{font-family:var(--font-display);font-size:34px;color:var(--gold);margin-bottom:12px;font-weight:900}
+#submitted p{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:24px}
+#submitted .check-list{background:var(--surface);border-radius:var(--radius);padding:20px;border:1px solid var(--border);text-align:left;width:100%;max-width:340px;margin-bottom:24px}
+#submitted .check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);line-height:1.4}
+#submitted .check-item:last-child{border-bottom:none}
+#submitted .check-item .dot{color:var(--gold);font-size:16px;flex-shrink:0;margin-top:1px}
+.btn-restart{padding:14px 32px;border-radius:var(--radius);border:none;background:linear-gradient(135deg,#8b1a35,var(--rose));color:white;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(232,67,106,.35)}
+
+/* ── DIVIDER ── */
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+/* animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.page{animation:fadeUp .3s ease}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">💞</div>
+  <div class="splash-name">HeartMatch USA</div>
+  <div class="splash-sub">Serious Dating · Real Connections</div>
+</div>
+
+<!-- SUBMITTED -->
+<div id="submitted">
+  <div class="inner">
+    <div class="rose">🌹</div>
+    <h1>You're In!</h1>
+    <p>Your profile has been submitted for review. We'll verify your info within 24–48 hours and notify you when you're live.</p>
+    <div class="check-list">
+      <div class="check-item"><span class="dot">✦</span><span>Check your email for a confirmation link</span></div>
+      <div class="check-item"><span class="dot">✦</span><span>Your profile is private until approved</span></div>
+      <div class="check-item"><span class="dot">✦</span><span>Smart matching begins once verified</span></div>
+      <div class="check-item"><span class="dot">✦</span><span>You'll see your first matches within 72 hours</span></div>
+    </div>
+    <button class="btn-restart" onclick="location.reload()">Start New Profile</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="header">
+    <div class="header-logo">
+      <span>💞</span>
+      <span class="name">HeartMatch USA</span>
+    </div>
+    <div class="header-right" id="stepLabel">1 / 11</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <div class="tabs" id="tabsBar"></div>
+  <div class="scroll-area" id="scrollArea">
+    <div class="page" id="pageContent"></div>
+  </div>
+  <div class="nav-bar">
+    <button class="btn-back" id="btnBack" onclick="goBack()" style="display:none">← Back</button>
+    <button class="btn-next" id="btnNext" onclick="goNext()">Get Started →</button>
+  </div>
+</div>
+
+<input type="file" id="photoInput" accept="image/*" multiple style="display:none" onchange="handlePhotos(event)"/>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────
+const STEPS = ["Welcome","Identity","Physical","Photos","Profession","Lifestyle","Beliefs","History","Partner","Requirements","Review"];
+let step = 0;
+let photos = [];
+const D = {}; // all form data
+
+// ─── OPTION LISTS ────────────────────────────────────────
+const BODY_TYPES = ["Slim","Athletic","Average","Curvy","Full-figured","Muscular","Petite","Plus-size","Heavyset"];
+const RELIGIONS = ["Christian (Protestant)","Catholic","Mormon/LDS","Muslim","Jewish","Hindu","Buddhist","Sikh","Atheist","Agnostic","Spiritual","Other","Prefer not to say"];
+const ETHNICITIES = ["White/Caucasian","Black/African American","Hispanic/Latino","Asian","Middle Eastern","South Asian","Native American","Pacific Islander","Multiracial","Other","Prefer not to say"];
+const EDUCATION = ["High School","Some College","Associate's","Bachelor's","Master's","Doctorate","Trade/Vocational","Other"];
+const POLITICS = ["Very Liberal","Liberal","Moderate","Conservative","Very Conservative","Apolitical","Prefer not to say"];
+const STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"];
+const DEALBREAKERS = ["Smoking","Heavy drinking","Drug use","Different religion","Opposite political views","Has children","Doesn't want children","No stable income","Criminal record","Lives far away","Different relationship goals","Unhealthy lifestyle","No education","Financial debt","Bad hygiene","Commitment issues","Controlling behavior","Insecurity/jealousy","Excessive social media","Disrespectful to others"];
+const INDUSTRIES = ["Healthcare","Technology","Education","Finance","Law","Business/Entrepreneur","Arts/Creative","Government/Military","Real Estate","Retail/Hospitality","Non-profit","Science/Research","Media/Journalism","Trades/Construction","Sports/Fitness","Other"];
+const ATTACH_STYLES = ["Secure","Anxious (need reassurance)","Avoidant (need space)","Fearful (push-pull)","Still figuring it out"];
+
+// ─── HELPERS ─────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const e=(tag,cls,html='')=>{const el=document.createElement(tag);if(cls)el.className=cls;el.innerHTML=html;return el;};
+
+function pill(key,val,multi=true,style=''){
+  const active=multi?(D[key]||[]).includes(val):D[key]===val;
+  return `<button class="pill${active?' on':''}${style?' '+style:''}" onclick="tgl('${key}','${val}',${multi})">${val}</button>`;
+}
+function pills(label,key,opts,multi=true,style=''){
+  return `<div class="pill-group"><label>${label}</label><div class="pills">${opts.map(o=>pill(key,o,multi,style)).join('')}</div></div>`;
+}
+function inp(label,key,type='text',ph='',req=false){
+  return `<div class="field"><label>${label}${req?'<span class="req"> *</span>':''}</label><input type="${type}" value="${D[key]||''}" placeholder="${ph}" oninput="D['${key}']=this.value"/></div>`;
+}
+function sel(label,key,opts,ph='Select...'){
+  return `<div class="field"><label>${label}</label><select onchange="D['${key}']=this.value"><option value="">${ph}</option>${opts.map(o=>`<option value="${o}"${D[key]===o?' selected':''}>${o}</option>`).join('')}</select></div>`;
+}
+function ta(label,key,ph='',rows=3){
+  return `<div class="field"><label>${label}</label><textarea rows="${rows}" placeholder="${ph}" oninput="D['${key}']=this.value">${D[key]||''}</textarea></div>`;
+}
+function secTitle(icon,title,sub=''){
+  return `<div class="sec-title"><h2>${icon} ${title}</h2>${sub?`<p>${sub}</p>`:''}</div>`;
+}
+function hSel(key,type){
+  if(type==='ft') return `<select onchange="D['${key}']=this.value" style="width:100%;padding:13px 10px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;outline:none;-webkit-appearance:none"><option value="">Ft</option>${[4,5,6,7].map(n=>`<option value="${n}"${D[key]==n?' selected':''}>${n}'</option>`).join('')}</select>`;
+  return `<select onchange="D['${key}']=this.value" style="width:100%;padding:13px 10px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;outline:none;-webkit-appearance:none"><option value="">In</option>${[0,1,2,3,4,5,6,7,8,9,10,11].map(n=>`<option value="${n}"${D[key]==n?' selected':''}>${n}"</option>`).join('')}</select>`;
+}
+
+function tgl(key,val,multi){
+  if(multi){
+    if(!D[key])D[key]=[];
+    const i=D[key].indexOf(val);
+    i>=0?D[key].splice(i,1):D[key].push(val);
+  } else D[key]=D[key]===val?'':val;
+  render();
+}
+
+// ─── STEP CONTENT ────────────────────────────────────────
+function getPage(s){
+  switch(s){
+
+  case 0: return `
+    <div class="welcome-hero">
+      <div class="logo-big">💞</div>
+      <h1>HeartMatch<br/>USA</h1>
+      <p>Where serious women meet serious partners. Built on honesty, compatibility & shared values.</p>
+    </div>
+    <div class="welcome-quote">
+      <p>"Real connection starts with real truth. Our detailed profile ensures every match is intentional."</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card"><div class="icon">📋</div><div class="title">Deep Intake</div><div class="desc">11 detailed sections covering everything that matters</div></div>
+      <div class="feature-card"><div class="icon">🔒</div><div class="title">Private & Safe</div><div class="desc">Your data is encrypted and never sold</div></div>
+      <div class="feature-card"><div class="icon">💡</div><div class="title">Smart Match</div><div class="desc">AI-powered compatibility scoring</div></div>
+      <div class="feature-card"><div class="icon">✅</div><div class="title">Verified</div><div class="desc">Every profile manually reviewed before going live</div></div>
+    </div>`;
+
+  case 1: return `
+    ${secTitle('🪪','Your Identity','Private — only shared with matches you approve.')}
+    <div class="grid2">${inp('First Name','firstName','text','Jane',true)}${inp('Last Name','lastName','text','Smith',true)}</div>
+    ${inp('Display Name','displayName','text','How you appear on your profile',true)}
+    ${inp('Date of Birth','dob','date','',true)}
+    ${pills('Gender Assigned at Birth *','birthGender',['Female','Male','Intersex','Prefer not to say'],false)}
+    ${pills('Your Pronouns','pronouns',['She/Her','They/Them','She/They','Other'],false)}
+    ${pills('Sexual Orientation','orientation',['Heterosexual','Bisexual','Pansexual','Queer','Prefer not to say'],false)}
+    ${pills('Ethnicity','ethnicity',ETHNICITIES,false)}
+    ${inp('Nationality','nationality','text','e.g. American')}
+    ${inp('ZIP Code','zip','text','Your zip code')}`;
+
+  case 2: return `
+    ${secTitle('📏','Physical Stats','Your honest measurements. Confidential — only shown to mutual matches.')}
+    <div class="box info">📊 Accurate info leads to better matches. All stats are kept private.</div>
+    <div class="field"><label>Your Height</label></div>
+    <div class="grid2" style="margin-bottom:18px">
+      <div class="field" style="margin-bottom:0">${hSel('heightFt','ft')}</div>
+      <div class="field" style="margin-bottom:0">${hSel('heightIn','in')}</div>
+    </div>
+    ${inp('Your Weight (lbs)','weight','number','e.g. 145')}
+    ${pills('Your Body Type','bodyType',BODY_TYPES,false)}
+    <div class="grid2">
+      ${sel('Eye Color','eyeColor',['Brown','Blue','Green','Hazel','Gray','Amber','Other'])}
+      ${sel('Hair Color','hairColor',['Black','Dark Brown','Brown','Light Brown','Blonde','Red','Auburn','Gray','White','Other'])}
+    </div>
+    ${sel('Skin Tone','skinTone',['Very fair','Fair','Light','Medium','Olive','Tan','Brown','Dark brown','Deep'])}`;
+
+  case 3: {
+    const need=Math.max(0,6-photos.length);
+    const status=photos.length>=6
+      ?`<div class="box ok">✅ ${photos.length} photos uploaded — you're good to go!</div>`
+      :`<div class="box warn">⚠️ Need ${need} more photo${need!==1?'s':''} to continue (minimum 6 required)</div>`;
+    let slots='';
+    photos.forEach((p,i)=>{
+      slots+=`<div class="photo-slot filled${i===0?' main-slot':''}"><img src="${p}" alt=""/>${i===0?'<div class="photo-badge">MAIN</div>':''}<button class="photo-del" onclick="delPhoto(${i})">✕</button></div>`;
+    });
+    const empties=Math.max(0,6-photos.length);
+    for(let i=0;i<empties;i++) slots+=`<div class="photo-slot" onclick="$('photoInput').click()"><div class="photo-add-icon">＋</div><div class="photo-add-txt">Required</div></div>`;
+    return `
+      ${secTitle('📸','Your Photos','Upload at least 6 recent photos. First photo is your main profile image.')}
+      ${status}
+      <div class="box info">📋 Guidelines: Recent (within 1 year) · Clear face · No heavy filters · At least 1 full-body shot · No group photos as main</div>
+      <button class="add-photo-btn" onclick="$('photoInput').click()">📷 Add Photos (up to 12)</button>
+      <div class="photo-grid">${slots}</div>`; }
+
+  case 4: return `
+    ${secTitle('💼','Profession & Education','Career compatibility matters for lifestyle alignment.')}
+    ${inp('Job Title / Profession','profession','text','e.g. Registered Nurse',true)}
+    ${inp('Employer (optional)','employer','text','Company or organization')}
+    ${sel('Industry','industry',INDUSTRIES)}
+    ${sel('Education Level','education',EDUCATION)}
+    ${sel('Annual Income (optional)','income',['Under $25K','$25K–$40K','$40K–$60K','$60K–$85K','$85K–$120K','$120K–$175K','$175K+','Prefer not to say'])}
+    ${pills('Work Style','workStyle',['Office 9–5','Remote/WFH','Hybrid','Shift Work','Self-Employed','Freelance','Student','Multiple jobs'])}
+    ${ta('Your career story & ambitions','careerBio','What drives you? Where are you headed professionally?',3)}`;
+
+  case 5: return `
+    ${secTitle('🌿','Lifestyle & Daily Life','How you live day-to-day is just as important as who you are.')}
+    <div class="grid2">${inp('City','city','text','Your city')}${sel('State','state',STATES)}</div>
+    ${pills('Relationship Goal','relGoal',['Long-term relationship','Marriage','Casual dating','Friendship first','Open to anything'],false)}
+    ${pills('Smoking','smoking',['Never','Socially','Regularly','Trying to quit'],false)}
+    ${pills('Drinking','drinking',['Never','Rarely','Socially','Regularly'],false)}
+    ${pills('Marijuana Use','marijuana',['Never','Occasionally','Regularly','Medically'],false)}
+    ${pills('Exercise','exercise',['Never','1–2x/week','3–4x/week','Daily','Twice daily'],false)}
+    ${pills('Diet','diet',['No restrictions','Vegetarian','Vegan','Kosher','Halal','Gluten-free','Keto','Paleo','Other'])}
+    ${pills('Children (yours)','hasKids',['No kids, want none','No kids, open to having','No kids, definitely want','Have kids, want no more','Have kids, open to more'],false)}
+    ${sel('Do you want (more) children?','wantsKids',['Definitely yes','Open to it','Definitely not','Not sure yet','I already have all I want'])}
+    ${sel('Living Situation','living',['Live alone','With roommates','With family','Own my home','With my kids','Other'])}
+    ${inp('Pets','pets','text','e.g. 2 dogs, cat lover, allergic to cats...')}
+    ${inp('Languages','languages','text','e.g. English, Spanish')}
+    ${inp('Hobbies & Passions','hobbies','text','e.g. hiking, cooking, yoga, travel...')}
+    ${pills('Political Views','politics',POLITICS,false)}
+    ${ta('Your ideal weekend looks like...','weekend','Paint a picture of your perfect Saturday & Sunday...',3)}
+    ${ta('What makes you laugh / brings you joy?','joy','Be specific and real!',2)}`;
+
+  case 6: return `
+    ${secTitle('🕊️','Beliefs & Values','Spiritual and value alignment is often the foundation of lasting love.')}
+    ${pills('Religion You Were Born Into','birthReligion',RELIGIONS,false)}
+    ${pills('Your Current Religion / Spirituality','currentReligion',RELIGIONS,false)}
+    ${sel('How Actively Do You Practice?','practice',['Very devout — shapes my entire life','Practice regularly (weekly)','Occasionally (holidays/events)','Cultural but not practicing','Spiritual but not religious','Not religious at all'])}
+    ${ta('Your personal values & non-negotiable beliefs','values','What do you stand for? What principles guide every decision?',4)}
+    ${ta('Your life philosophy','philosophy','How do you see the world? What is a meaningful life to you?',3)}
+    ${ta('Your political beliefs (be honest)','politicalBelief','This is private — honest answers lead to better matches',3)}
+    <hr class="divider"/>
+    <div class="pill-group"><label>Your Dealbreakers — select everything that applies</label><div class="pills">${DEALBREAKERS.map(o=>{const a=(D.dealbreakers||[]).includes(o);return`<button class="pill${a?' on purple':''}" onclick="tgl('dealbreakers','${o}',true)">${o}</button>`;}).join('')}</div></div>
+    ${ta('Additional dealbreakers not listed above','extraDealbreakers','Be specific and honest — this saves everyone time.',3)}`;
+
+  case 7: return `
+    ${secTitle('📖','Critical History','Honesty here protects everyone. All info is strictly confidential.')}
+    <div class="box privacy">🔒 This section is <strong>100% private</strong>. Used only for safety screening & compatibility — never shared without your explicit consent.</div>
+    ${sel('Longest Relationship','longestRel',['Never been in a relationship','Less than 6 months','6–12 months','1–2 years','2–5 years','5–10 years','10+ years','Was married'])}
+    ${sel('Divorces / Separations','divorces',['None','1','2','3 or more','Prefer not to say'])}
+    ${ta('Why are you single now?','whySingle','Be brief and honest. What happened and what did you take from it?',3)}
+    ${sel('Your Attachment Style','attachStyle',ATTACH_STYLES)}
+    <div class="box info">💡 Not sure of your attachment style? Look it up — it transforms dating self-awareness.</div>
+    ${sel('Mental Health','mentalHealth',['No conditions','Anxiety (managed)','Depression (managed)','In therapy now','Was in therapy','On medication','Multiple conditions managed','Prefer not to say'])}
+    ${ta('Physical health (if relevant to a partner)','physHealth','e.g. chronic illness, disability, fertility considerations. Leave blank if N/A.',2)}
+    ${sel('Criminal History','criminal',['None','Minor/expunged record','Misdemeanor(s)','Felony conviction(s)','Prefer not to say'])}
+    ${sel('Financial Health','financial',['Financially stable & saving','Working toward stability','Carrying significant debt','Excellent — debt free','Recently in bankruptcy','Prefer not to say'])}
+    ${sel('Social Media Presence','socialMedia',['Not on social media','Private personal accounts','Active personal user','Public figure/influencer','Business use only'])}
+    ${ta('Biggest lessons from past relationships','lessons','What did you learn about yourself? What will you do differently this time?',4)}
+    ${ta('Anything else a match should know about your history?','otherHistory','Optional — only share what you feel is important.',2)}`;
+
+  case 8: return `
+    ${secTitle('💑','Partner Preferences','Be honest and specific. This is what makes matching actually work.')}
+    <div class="field"><label>Partner's Age Range</label></div>
+    <div class="grid2" style="margin-bottom:18px">
+      ${inp('Min Age','pMinAge','number','e.g. 28')}
+      ${inp('Max Age','pMaxAge','number','e.g. 48')}
+    </div>
+    <div class="field"><label>Partner's Acceptable Height Range</label></div>
+    <div class="grid4" style="margin-bottom:18px">
+      <div class="field" style="margin-bottom:0"><label style="font-size:10px;color:var(--muted)">Min Ft</label>${hSel('pMinHFt','ft')}</div>
+      <div class="field" style="margin-bottom:0"><label style="font-size:10px;color:var(--muted)">Min In</label>${hSel('pMinHIn','in')}</div>
+      <div class="field" style="margin-bottom:0"><label style="font-size:10px;color:var(--muted)">Max Ft</label>${hSel('pMaxHFt','ft')}</div>
+      <div class="field" style="margin-bottom:0"><label style="font-size:10px;color:var(--muted)">Max In</label>${hSel('pMaxHIn','in')}</div>
+    </div>
+    <div class="grid2">${inp('Partner Min Weight (lbs)','pMinW','number','e.g. 140')}${inp('Partner Max Weight (lbs)','pMaxW','number','e.g. 260')}</div>
+    ${pills('Acceptable Body Types','pBodyTypes',BODY_TYPES)}
+    ${pills('Open to These Ethnicities','pEthnicities',ETHNICITIES)}
+    ${pills('Acceptable Religions','pReligions',RELIGIONS)}
+    ${pills('Minimum Education Acceptable','pEducation',EDUCATION,false)}
+    ${pills('Acceptable Political Views','pPolitics',POLITICS)}
+    ${sel('Children Preference','pKidsPref',['No children preferred','Children is fine','Must not want more kids','Must want children','No preference'])}
+    ${sel('Smoking Tolerance','pSmoking',['Must not smoke at all','Social/light smoking okay','Any is fine','No preference'])}
+    ${sel('Drinking Tolerance','pDrinking',['Must not drink','Light drinking okay','Any is fine','No preference'])}
+    ${sel('Income Expectation','pIncome',['No expectation','Self-sufficient is enough','Stable income required','Must be financially established','No preference'])}
+    ${ta('Describe your ideal man in your own words','idealPartner','Personality, energy, how he makes you feel, what a Tuesday night together feels like...',4)}`;
+
+  case 9: return `
+    ${secTitle('✨','Your Requirements','The difference between a good match and the right match.')}
+    <div class="req-card must">
+      <h3>🎯 Non-Negotiables</h3>
+      <p>Absolute must-haves. Any match who doesn't meet these will never be shown to you.</p>
+      ${ta('Specific requirements (must-haves)','mustHave','Examples: Must want marriage within 2 years. Must be Christian and actively practice. Must be financially stable. Must not smoke. Must be childfree. Must live in my city...',6)}
+    </div>
+    <div class="req-card flex">
+      <h3>🌸 Flexible Preferences</h3>
+      <p>Things you'd love but could reconsider for the absolutely right person.</p>
+      ${ta('Flexible requirements (nice-to-haves)','niceToHave','Examples: Prefer tall but not required. Would love someone who travels. Nice if he cooks. Ideally no kids but open. Prefer someone athletic...',6)}
+    </div>
+    ${ta('What does your ideal first date look like?','firstDate','Coffee? Dinner? Hiking? Mini golf? Be specific.',2)}
+    ${ta('Write your profile bio — sell yourself!','bio','This is what your matches first read. Be real, warm, and interesting. What makes you YOU?',5)}`;
+
+  case 10: {
+    const checks=[
+      [!!(D.firstName&&D.dob&&D.birthGender),'🪪 Identity',D.firstName?`${D.firstName} ${D.lastName||''} · ${D.birthGender}`:'Incomplete'],
+      [!!(D.heightFt&&D.bodyType),'📏 Physical',D.heightFt?`${D.heightFt}'${D.heightIn||0}" · ${D.weight||'?'}lbs · ${D.bodyType}`:'Incomplete'],
+      [photos.length>=6,'📸 Photos',`${photos.length} uploaded ${photos.length>=6?'✅':'⚠️ Need more'}`],
+      [!!(D.profession&&D.education),'💼 Profession',D.profession?`${D.profession} · ${D.education}`:'Incomplete'],
+      [!!(D.city&&D.relGoal),'🌿 Lifestyle',D.city?`${D.city}, ${D.state||''} · ${D.relGoal}`:'Incomplete'],
+      [!!(D.currentReligion&&D.values),'🕊️ Beliefs',D.currentReligion?`${D.currentReligion} · ${D.practice||'Practice not set'}`:'Incomplete'],
+      [!!(D.longestRel&&D.attachStyle),'📖 History',D.longestRel?`Longest: ${D.longestRel}`:'Incomplete'],
+      [!!(D.pMinAge&&D.pMaxAge),'💑 Partner Prefs',D.pMinAge?`Ages ${D.pMinAge}–${D.pMaxAge} · ${(D.pBodyTypes||[]).length} body types`:'Incomplete'],
+      [!!D.mustHave,'✨ Requirements',D.mustHave?'Non-negotiables filled ✅':'Not filled'],
+    ];
+    const score=checks.filter(c=>c[0]).length;
+    const pct=Math.round((score/9)*100);
+    const circ=2*Math.PI*40;
+    const dash=circ*(pct/100);
+    return `
+      ${secTitle('🌹','Review Profile','Check everything before submitting.')}
+      <div style="text-align:center;padding:20px 0">
+        <div class="score-ring">
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" stroke-width="8"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gold)" stroke-width="8" stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
+          </svg>
+          <div class="score-num">${pct}%</div>
+        </div>
+        <div style="font-family:var(--font-display);font-size:16px;color:var(--muted)">${score}/9 sections complete</div>
+      </div>
+      ${checks.map(([ok,label,val])=>`<div class="review-card"><span class="review-label">${label}</span><span class="review-val" style="color:${ok?'var(--muted)':'var(--rose)'}">${val}</span></div>`).join('')}
+      ${photos.length<6?`<div class="box warn" style="margin-top:12px">⚠️ You still need ${6-photos.length} more photo${6-photos.length!==1?'s':''} to submit.</div>`:''}
+      <div class="box info" style="margin-top:12px">By submitting you confirm all information is truthful. False information will result in permanent ban.</div>`;
+  }}
+}
+
+// ─── RENDER ──────────────────────────────────────────────
+function render(){
+  // tabs
+  $('tabsBar').innerHTML = STEPS.map((s,i)=>`<button class="tab${i===step?' active':i<step?' done':''}" onclick="jumpTo(${i})">${i<step?'✓ ':''}${s}</button>`).join('');
+  // progress
+  $('progressBar').style.width=`${(step/(STEPS.length-1))*100}%`;
+  // label
+  $('stepLabel').textContent=`${step+1} / ${STEPS.length}`;
+  // content
+  const page=$('pageContent');
+  page.innerHTML=getPage(step);
+  // nav
+  $('btnBack').style.display=step>0?'block':'none';
+  const isLast=step===STEPS.length-1;
+  $('btnNext').textContent=step===0?'Get Started →':isLast?'🌹 Submit Profile':'Continue →';
+  $('btnNext').disabled=isLast&&photos.length<6;
+  // scroll top
+  $('scrollArea').scrollTo({top:0,behavior:'smooth'});
+}
+
+function jumpTo(i){if(i<=step){step=i;render();}}
+function goBack(){if(step>0){step--;render();}}
+function goNext(){
+  if(step===STEPS.length-1){
+    if(photos.length<6){alert('Please add at least 6 photos before submitting.');return;}
+    $('submitted').style.display='block';
+    $('app').style.display='none';
+  } else { step++; render(); }
+}
+
+// ─── PHOTOS ──────────────────────────────────────────────
+function handlePhotos(e){
+  Array.from(e.target.files).forEach(f=>{
+    if(photos.length>=12)return;
+    const r=new FileReader();
+    r.onload=ev=>{photos.push(ev.target.result);render();};
+    r.readAsDataURL(f);
+  });
+  e.target.value='';
+}
+function delPhoto(i){photos.splice(i,1);render();}
+
+// ─── BOOT ────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  render();
+  setTimeout(()=>$('splash').classList.add('hide'),1800);
+});
+</script>
+
+<!-- PWA Service Worker -->
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

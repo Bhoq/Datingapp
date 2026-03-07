@@ -1,0 +1,33 @@
+{
+  "name": "HeartMatch USA",
+  "short_name": "HeartMatch",
+  "description": "Serious dating for serious people. Find your real match.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0508",
+  "theme_color": "#1a0a0f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "social"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "label": "HeartMatch welcome screen"
+    }
+  ]
+}
